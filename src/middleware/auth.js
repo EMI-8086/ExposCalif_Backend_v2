@@ -13,6 +13,7 @@ const authenticate = async (req, res, next) => {
     const { data, error } = await supabaseAdmin.auth.getUser(token);
 
     if (error || !data?.user) {
+      console.log('Error de Supabase Auth:', error);
       return res.status(401).json({ error: 'Token inválido o expirado.' });
     }
 
@@ -23,6 +24,7 @@ const authenticate = async (req, res, next) => {
       .single();
 
     if (usuarioError) {
+      console.log('Error al buscar en tabla usuarios:', usuarioError);
       return res.status(401).json({ error: 'Usuario no encontrado en el sistema.' });
     }
 
