@@ -44,32 +44,31 @@ router.get('/:id', async (req, res) => {
 
 /**
  * POST /api/usuarios
- * Solo admin puede crear usuarios directamente.
- * Body: { email, password, nombre, apellido, rol, matricula? }
+ * Ruta pública para registro de alumnos.
+ * Body: { email, password, nombre, apellido }
  */
-router.post('/', authorize('admin'), async (req, res) => {
-  const { email, password, nombre, apellido, rol = 'alumno', matricula } = req.body;
+router.post('/', async (req, res) => {
+  const { email, password, nombre, apellido } = req.body;
 
   if (!email || !password || !nombre || !apellido) {
     return res.status(400).json({ error: 'email, password, nombre y apellido son obligatorios.' });
   }
 
+  // Forzamos el rol a 'alumno'
+  const rolAsignado = 'alumno';
+
   const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
-    user_metadata: { nombre, apellido, rol },
+    user_metadata: { 
+      nombre, 
+      apellido, 
+      rol: rolAsignado 
+    },
   });
 
   if (error) return res.status(400).json({ error: error.message });
-
-  // Si hay matrícula, actualizarla (el trigger no la maneja)
-  if (matricula) {
-    await supabaseAdmin
-      .from('usuarios')
-      .update({ matricula })
-      .eq('id_usuario', data.user.id);
-  }
 
   const { data: usuario } = await supabaseAdmin
     .from('usuarios')
@@ -77,7 +76,7 @@ router.post('/', authorize('admin'), async (req, res) => {
     .eq('id_usuario', data.user.id)
     .single();
 
-  res.status(201).json({ message: 'Usuario creado correctamente.', usuario });
+  res.status(201).json({ message: 'Cuenta de alumno creada correctamente.', usuario });
 });
 
 /**
