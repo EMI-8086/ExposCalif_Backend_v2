@@ -21,11 +21,21 @@ router.post('/login', async (req, res) => {
   }
 
   // Obtener info del usuario
-  const { data: usuario } = await supabaseAdmin
+  const { data: usuario, error: errorUsuario } = await supabaseAdmin
     .from('usuarios')
-    .select('id_usuario, nombre, apellido, email, rol, matricula')
+    .select('id_usuario, nombre, apellido, email, rol, matricula') 
     .eq('id_usuario', data.user.id)
     .single();
+
+  if (errorUsuario) {
+    console.error('Error al consultar la tabla usuarios:', errorUsuario);
+  }
+
+  if (!usuario) {
+    return res.status(404).json({ 
+      error: 'Usuario autenticado, pero no tiene un perfil registrado en el sistema.' 
+    });
+  }
 
   res.json({
     message: 'Login exitoso',
@@ -33,6 +43,7 @@ router.post('/login', async (req, res) => {
     refresh_token: data.session.refresh_token,
     usuario,
   });
+
 });
 
 /**
