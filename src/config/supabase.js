@@ -8,7 +8,12 @@ if (!supabaseUrl || !supabaseServiceKey || !supabaseAnonKey) {
   throw new Error('Faltan variables de entorno de Supabase');
 }
 
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+  }
+});
 
 const createUserClient = (accessToken) => {
   return createClient(supabaseUrl, supabaseAnonKey, {
