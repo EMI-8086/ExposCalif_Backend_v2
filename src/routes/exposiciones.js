@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
       *,
       equipos(
         id_equipo, nombre_equipo,
-        grupos(id_grupo, nombre_grupo, periodo, materias(nombre_materia))
+        grupos(id_grupo, id_materia, nombre_grupo, periodo, materias(id_materia, nombre_materia))
       ),
       evaluaciones(count)
     `)
@@ -52,7 +52,7 @@ router.get('/:id', async (req, res) => {
       *,
       equipos(
         id_equipo, nombre_equipo,
-        grupos(id_grupo, nombre_grupo, periodo, materias(nombre_materia)),
+        grupos(id_grupo, id_materia, nombre_grupo, periodo, materias(id_materia, nombre_materia)),
         equipo_alumno(alumnos(id_alumno, nombre, apellido, matricula))
       ),
       evaluaciones(

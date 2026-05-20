@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
     .from('equipos')
     .select(`
       *,
-      grupos(id_grupo, nombre_grupo, periodo, materias(nombre_materia)),
+      grupos(id_grupo, id_materia, nombre_grupo, periodo, materias(id_materia, nombre_materia)),
       equipo_alumno(
         alumnos(id_alumno, matricula, nombre, apellido, email)
       )
@@ -37,7 +37,7 @@ router.get('/:id', async (req, res) => {
     .from('equipos')
     .select(`
       *,
-      grupos(id_grupo, nombre_grupo, periodo, materias(nombre_materia)),
+      grupos(id_grupo, id_materia, nombre_grupo, periodo, materias(id_materia, nombre_materia)),
       equipo_alumno(
         alumnos(id_alumno, matricula, nombre, apellido, email)
       ),
@@ -70,7 +70,6 @@ router.post('/', authorize('admin', 'docente'), async (req, res) => {
 
   if (error) return res.status(400).json({ error: error.message });
 
-  // Agregar alumnos si se proporcionaron
   if (alumno_ids.length > 0) {
     const relaciones = alumno_ids.map((id_alumno) => ({
       id_equipo: equipo.id_equipo,
@@ -79,7 +78,6 @@ router.post('/', authorize('admin', 'docente'), async (req, res) => {
 
     const { error: relError } = await supabaseAdmin.from('equipo_alumno').insert(relaciones);
     if (relError) {
-      // Equipo creado pero sin alumnos — avisar
       return res.status(201).json({
         message: 'Equipo creado, pero error al agregar alumnos.',
         equipo,
@@ -128,8 +126,6 @@ router.delete('/:id', authorize('admin'), async (req, res) => {
 
   res.json({ message: 'Equipo eliminado.' });
 });
-
-// ─── Gestión de Miembros del Equipo ─────────────────────────────────────────
 
 /**
  * POST /api/equipos/:id/alumnos
