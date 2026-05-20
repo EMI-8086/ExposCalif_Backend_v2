@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 4000;
 // ─── Middlewares globales ────────────────────────────────────────────────────
 app.use(cors({
   origin: [
-    'https://frontendexpocaliff.vercel.app.', // Para producción en Vercel
+    'https://frontendexpocaliff.vercel.app', // Para producción en Vercel
     'http://localhost:5173'                    // Para desarrollo local
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
